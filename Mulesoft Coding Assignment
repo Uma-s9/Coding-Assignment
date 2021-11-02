@@ -1,0 +1,107 @@
+import java.sql.*;
+import java.util.Scanner;
+public class Solution {
+
+	public static void main(String[] args) throws Exception{
+		try{  
+			Class.forName("oracle.jdbc.driver.OracleDriver");  
+			Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","root"); //Connecting to Oracle(SQL*PLUS) database
+			Scanner sc=new Scanner(System.in);
+			System.out.println("Enter the Option");
+			int op=sc.nextInt();
+			switch(op)
+			{
+			// Case 1 and Case 2 are creation of table and inserting data into created table respectively;
+			case 1:
+			{
+				//Creation of Movies Table;
+				Statement stmt=con.createStatement();
+				String sql="create table Movies(Name varchar(12),Actor varchar(12),Actress varchar(12),Director varchar(12),YearofRealease number)";
+				stmt.executeUpdate(sql);
+				System.out.println("Movies table created in oracle database..!!!");
+				break;
+			}
+			case 2:
+			{
+				//Inserting Records in to the Movies Table;
+				int i=1;
+				int n=sc.nextInt();
+				while(i<=n)
+				{
+				Scanner sc1=new Scanner(System.in);
+				String a=sc1.nextLine();
+				String b=sc1.nextLine();
+				String c=sc1.nextLine();
+				String d=sc1.nextLine();
+				int e=sc1.nextInt();
+				PreparedStatement stmt1=con.prepareStatement("insert into Movies values(?,?,?,?,?)");
+				stmt1.setString(1,a);
+				stmt1.setString(2,b);
+				stmt1.setString(3,c);
+				stmt1.setString(4,d);
+				stmt1.setInt(5,e);
+				int p=stmt1.executeUpdate();
+				System.out.println(p+" "+"records Inserted");
+				if(i==n)
+				{
+					sc1.close();
+					break;
+				}
+				else 
+				{
+					i=i+1;
+					continue;
+				}
+				}
+			}
+			// Case 3 and Case 4 are Querying data from Movies Table;
+			case 3:
+			{
+				//Retrieving all the rows from Movies table using select query;
+				Statement stmt2=con.createStatement();
+				String sql="select *from movies";
+				ResultSet rs=stmt2.executeQuery(sql);
+				while(rs.next())
+				{
+					System.out.println("["+rs.getString(1)+" "+rs.getString(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getInt(5)+"]");
+				}
+				break;
+			}
+			case 4:
+			{
+				//Retrieve the particular Movie name based on actor name;
+				int z=0;
+				Scanner sc2=new Scanner(System.in);
+				Statement stmt3=con.createStatement();
+				String r=sc2.nextLine();
+				String sql="select Name from movies where Actor='"+r+"'";
+				ResultSet rs=stmt3.executeQuery(sql);
+				while(rs.next())
+				{
+					z=1;
+					System.out.println("["+rs.getString(1)+"]");
+				}
+				if(z==0)
+				{
+					System.out.println("No Movie Name && Actor Found");
+				}
+				sc2.close();
+				break;
+				
+			}
+			default:
+			{
+				if(op<1 || op>4)
+				{
+					System.out.println("Enter Correct Option");
+				}
+			}
+			}
+			sc.close();
+		}
+		catch(Exception e)
+		{ 
+			System.out.println(e);
+		}  
+	} 
+}
